@@ -1,0 +1,11 @@
+BNI (009)           BANK UOB (023) 
+BRI (002)           OCBC NISP (028) 
+MANDIRI (008)       CITIBANK (031) 
+BTN (200)           CCBINDONESIA (036) 
+BCA (014)           ARTHA GRAHA (037) 
+DANAMON (011)       MUFG BANK (042)
+PERMATA (013)       BANK DBS (046) 
+MAYBANK (016)       STANCHART (050) 
+BANK PANIN (019)    BANK CAPITAL (054) 
+CIMB NIAGA (022)    ANZ (061)  
+Tekan Enter untuk kembali...

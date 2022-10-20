@@ -3,6 +3,7 @@ import os
 import datetime
 import pwinput
 os.system('cls')
+waktu = datetime.datetime.now()
 
 id_file = open("id.txt", "r+")
 pin_file = open("pin.txt", "r+")
@@ -10,6 +11,7 @@ balances_file = open("bin.txt", "r+")
 name_file = open("name.txt", "r+")
 id_other_file = open("id_other.txt", "r+")
 name_other_file = open("name_other.txt", "r+")
+bank_list_file = open("bank.txt", "r")
 
 id_list = []
 for i in id_file.readlines():
@@ -23,6 +25,23 @@ balances_list = []
 for i in balances_file.readlines():
     balances_list.append(int(i.strip()))
 
+name_list = []
+for i in name_file.readlines():
+    name_list.append(i.strip())
+
+id_other_list = []
+for i in id_other_file.readlines():
+    id_other_list.append(i.strip())
+
+name_other_list = []
+for i in name_other_file.readlines():
+    name_other_list.append(i.strip())
+
+nama_bank = {"009" : "BNI",  "002" : "BRI", "008" : "MANDIRI", "011" : "DANAMON", "013" : "PERMATA", "014" : "BCA",
+ 		    "016" : "MAYBANK", "019" : "BANK PANIN", "022" : "CIMB NIAGA", "028" : "OCB NISP", "031" : "CITIBANK",
+            "036" : "CCBINDONESIA", "037" : "ARTHA GRAHA", "046" : "BANK DBS", "050" : "STANCHART", "054" : "BANK CAPITAL",
+            "061" : "ANZ", "200" : "BTN"}
+
 kamus = {
     "Penarikan berhasil dilakukan."         : "Withdraw Sucessful.",
     "Saldo Anda sekarang adalah"            : "Your balance is",
@@ -32,7 +51,7 @@ kamus = {
     "Masukkan PIN baru Anda sekali lagi: "  : "Confirm your new PIN: ",
     "Kedua PIN baru Anda tidak sesuai."     : "Your new PIN does not match.",
     "PIN lama Anda tidak sesuai."           : "Your old PIN does not match.",
-    "Masukkan ID: "                         : "Enter your ID: ",
+    "Masukkan nomor rekening: "             : "Enter your account ID: ",
     "ID Anda tidak dikenali."               : "Your ID is not recognized.",
     "Masukkan PIN: "                        : "Enter your PIN: ",
     "PIN yang Anda masukkan salah."         : "Wrong PIN.",
@@ -47,11 +66,13 @@ kamus = {
     "4. Informasi saldo"                    : "4. Balance information",
     "5. Menu lain"                          : "5. Other menus",
     "6. Batal"                              : "6. Cancel",
-    "Apakah Anda ingin mencetak resi? (y/n): ": "Do you want a receipt? (y/n): "
-}
+    "Apakah Anda ingin mencetak resi? (y/n): ": "Do you want a receipt? (y/n): ", 
+    "Pilihan tidak tersedia."               : "Option is not available.",
+    "Transfer berhasil."                    : "Transfer successful.",
+    "Transaksi tidak dapat diproses."       : "Transantion cannot be processed." }
 
 def tr(a):                      #Untuk menterjemahkan suatu string
-    if bahasa == "Indonesia":
+    if bahasa == "1":
         return a
     else:
         if a in kamus:
@@ -65,57 +86,241 @@ def halaman1():
 def halaman2():
     print(tr("1. Penarikan tunai"), tr("2. Transfer"), tr("3. Ganti PIN"), tr("4. Informasi saldo"), tr("5. Menu lain"), tr("6. Batal"), sep="\n")
 
+def main():
+    while True:
+        os.system('cls')
+        halaman1()
+        pilih_menu = input(tr("Menu penarikan cepat (1-5): "))
+        if pilih_menu == "1":
+            penarikan_tunai(25000000)
+        elif pilih_menu == "2":
+            penarikan_tunai(50000000)
+        elif pilih_menu == "3":
+            penarikan_tunai(100000000)
+        elif pilih_menu == "4":
+            penarikan_tunai(125000000)
+        elif pilih_menu == "5":
+            while True:
+                os.system('cls')
+                halaman2()
+                pilih_menu = input(tr("Menu lain (1-5): "))
+                if pilih_menu == "1":
+                    os.system('cls')
+                    nominal = int(input(tr("Masukkan nominal uang (rupiah): ")))*100
+                    penarikan_tunai(nominal*100)
+                elif pilih_menu == "2":
+                    transfer()
+                elif pilih_menu == "3":
+                    ganti_pin()
+                elif pilih_menu == "4":
+                    informasi_saldo()
+                elif pilih_menu == "5":
+                    break
+                elif pilih_menu == "6":
+                    exit()
+                else:
+                    print(tr("Pilihan tidak tersedia."))
+        elif pilih_menu == "6":
+            exit()
+        else:
+            print(tr("Pilihan tidak tersedia."))
+    
 def ubah_format(awal):
+    if len(awal) == 1:
+        return "0,0"+awal
+    elif len(awal) == 2:
+        return "0,"+awal
     j = 0
     akhir_list = []
     akhir = ""
     for i in awal:
         akhir_list.append(i)
-    for i in range(len(awal), 0, -1):
+    for i in range(len(awal)-2, 0, -1):
         if j == 0:
             j += 1
             continue
         elif j%3 == 0:
-            akhir_list.insert(i, ",")
+            akhir_list.insert(i, ".")
         j += 1
-    akhir_list.append(".00")
+    akhir_list.insert(len(akhir_list)-2, ",")
     for i in akhir_list:
         akhir += i
     return akhir
 
 def penarikan_tunai(nominal):
-    if nominal <= balances_list[indeks]:
-        balances_list[indeks] -= nominal
-        waktu = datetime.datetime.now()
-        print(tr("Penarikan berhasil dilakukan."))
-        print(tr("Saldo Anda sekarang adalah"), f"Rp {ubah_format(str(balances_list[indeks]))}")
-        balances_file.seek(0)
-        for i in balances_list:
-            balances_file.writelines(str(i) + "\n")
-        balances_file.truncate()
-        cetak_resi = input(tr("Apakah Anda ingin mencetak resi? (y/n): "))
-        if cetak_resi == "y":
+    if (nominal % 5000000) == 0:
+        if nominal <= balances_list[indeks]:
+            balances_list[indeks] -= nominal
+            print(tr("Penarikan berhasil dilakukan."))
+            print(tr("Saldo Anda sekarang adalah"), f"Rp {ubah_format(str(balances_list[indeks]))}")
+            balances_file.seek(0)
+            for i in balances_list:
+                balances_file.writelines(str(i) + "\n")
+            balances_file.truncate()
+            cetak_resi = input(tr("Apakah Anda ingin mencetak resi? (y/n): "))
+            if cetak_resi == "y":
+                os.system('cls')
+                #Receipt keluar dengan format : tanggal, waktu, dan lokasi ATM, jumlah penarikan, dan sisa saldo
+                print("-"*16, "Bank BNI", "-"*16)
+                print("TANGGAL " + " "*28 + " WAKTU")
+                print(waktu.strftime("%d/%m/%y"+ " "*29 +"%H:%M"))
+                print("PENARIKAN:" + " "*6 + f"Rp {ubah_format(str(nominal))}" )
+                print("SALDO REKENING:" + f" Rp {ubah_format(str(balances_list[indeks]))}")
+                print("-"*42)
+                input()
+                os.system('cls')
+            ganti_pin_tanda_tanya = input(tr("Apakah Anda ingin mengganti password? (y/n): "))
+            if ganti_pin_tanda_tanya == "y":
+                ganti_pin()
+            else:
+                exit()
+        else:
+            print(tr("Maaf, saldo Anda tidak mencukupi."))
+            input()
+            main()
+    else:
+        print(tr("Transaksi tidak dapat diproses."))
+        input()
+        main()
+
+def konfirmasi_transfer(id,name,nominal):
+    os.system('cls')
+    print("Nomor rekening:", id)
+    print("Nama penerima:", name)
+    print("Nominal: Rp", ubah_format(str(nominal)))
+    print(tr("Tekan 1 jika sudah sesuai."))
+    print(tr("Tekan 2 jika tidak sesuai."))
+    return input()
+
+def ubah_rekening_tujuan(jenis_bank, id_tujuan, indeks_tujuan):
+    if jenis_bank == "1":
+            id_tujuan = input("Masukkan nomor rekening tujuan: ")
+            if id_tujuan in id_list:
+                indeks_tujuan = id_list.index(id_tujuan)
+            else:
+                print(tr("Nomor rekening tidak ada."))
+                input()
+                main()
+    else:
+        print(tr("Masukkan kode bank + nomor rekening tujuan."))
+        print(tr("Masukkan 0 untuk melihat daftar kode bank."))
+        id_tujuan = input()
+        while id_tujuan == 0:
             os.system('cls')
-            #Receipt keluar dengan format : tanggal, waktu, dan lokasi ATM, jumlah penarikan, dan sisa saldo
-            print("-"*16, "Bank BNI", "-"*16)
-            print("TANGGAL " + " "*28 + " WAKTU")
-            print(waktu.strftime("%d/%m/%y"+ " "*29 +"%H:%M"))
-            print("PENARIKAN:" + " "*6 + f"Rp {ubah_format(str(nominal))}" )
-            print("SALDO REKENING:" + f" Rp {ubah_format(str(balances_list[indeks]))}")
-            print("-"*42)
+            print(bank_list_file.read())
             input()
             os.system('cls')
-        ganti_pin_tanda_tanya = input(tr("Apakah Anda ingin mengganti password? (y/n): "))
-        if ganti_pin_tanda_tanya == True:
-            ganti_pin()
+            print(tr("Masukkan kode bank + nomor rekening tujuan."))
+            print(tr("Masukkan 0 untuk melihat daftar kode bank."))
+            id_tujuan = input()
+        if id_tujuan in id_other_list:
+            indeks_tujuan = id_other_list.index(id_tujuan)
         else:
-            exit()
-    else:
-        print(tr("Maaf, saldo Anda tidak mencukupi."))
+            print(tr("Nomor rekening tidak ada."))
+            input()
+            main()
 
+def ubah(jenis_bank, id_tujuan, indeks_tujuan, nominal):
+    os.system('cls')
+    print(tr("1. Ubah nomor rekening"))
+    print(tr("2. Ubah nominal"))
+    pilihan = input()
+    while pilihan != "1" and pilihan != "2":
+        os.system('cls')
+        print(tr("Pilihan tidak tersedia."))
+        print(tr("1. Ubah nomor rekening"))
+        print(tr("2. Ubah nominal"))
+        pilihan = input()
+    if pilihan == "1":
+        ubah_rekening_tujuan(jenis_bank, id_tujuan, indeks_tujuan)
+    else:
+        nominal = int(input("Masukkan nominal transfer: "))*100
+        
 def transfer():
-    jenis_bank = input(tr("Pilih tujuan transfer yang Anda inginkan (BNI/Bank lain): "))
-    while jenis_bank
+    os.system('cls')
+    print("1. BNI", "2. Bank lain", sep="\n")
+    jenis_bank = input(tr("Pilih tujuan transfer yang Anda inginkan: "))
+    while jenis_bank != "1" and jenis_bank != "2":
+        os.system('cls')
+        print(tr("Pilihan tidak tersedia."))
+        print("1. BNI", "2. Bank lain", sep="\n")
+        jenis_bank = input(tr("Pilih tujuan transfer yang Anda inginkan: "))
+    if jenis_bank == "1":
+        id_tujuan = input("Masukkan nomor rekening tujuan: ")
+        if id_tujuan == id:
+            print(tr("Anda tidak bisa transfer ke rekening sendiri."))
+            input()
+            main()
+        elif id_tujuan in id_list:
+            indeks_tujuan = id_list.index(id_tujuan)
+        else:
+            print(tr("Nomor rekening tidak ada."))
+            input()
+            main()
+    else:
+        print(tr("Masukkan kode bank + nomor rekening tujuan."))
+        print(tr("Masukkan 0 untuk melihat daftar kode bank."))
+        id_tujuan = input()
+        while id_tujuan == "0":
+            os.system('cls')
+            print(bank_list_file.read())
+            input()
+            os.system('cls')
+            print(tr("Masukkan kode bank + nomor rekening tujuan."))
+            print(tr("Masukkan 0 untuk melihat daftar kode bank."))
+            id_tujuan = input()
+        if id_tujuan in id_other_list:
+            indeks_tujuan = id_other_list.index(id_tujuan)
+        else:
+            print(tr("Nomor rekening tidak ada."))
+            input()
+            main()
+    nominal = int(input(tr("Masukkan nominal transfer: ")))*100
+    # KONFIRMASI
+    if jenis_bank == "1":
+        while konfirmasi_transfer(id_tujuan, name_list[indeks_tujuan], nominal) != "1":
+            ubah(jenis_bank, id_tujuan, indeks_tujuan, nominal)
+    else:
+        while konfirmasi_transfer(id_tujuan[3:], name_other_list[indeks_tujuan], nominal) != "1":
+            ubah(jenis_bank, id_tujuan, indeks_tujuan, nominal)
+    if nominal >= 100:
+        if nominal <= balances_list[indeks]:
+            balances_list[indeks] -= nominal*100
+            if jenis_bank == "1":
+                balances_list[indeks_tujuan] += nominal*100
+                balances_file.seek(0)
+                for i in balances_list:
+                    balances_file.writelines(str(i) + "\n")
+                balances_file.truncate()
+            print(tr("Transfer berhasil."))
+            while True:
+                cetak_resi = input(tr("Apakah Anda ingin mencetak resi? (y/n): "))
+                if cetak_resi == "y":
+                    os.system('cls')
+                    print("-"*16, "Bank BNI", "-"*16)
+                    print("TANGGAL " + " "*28 + " WAKTU")
+                    print(waktu.strftime("%d/%m/%y"+ " "*29 +"%H:%M"))
+                    print("-"*13, "TRANSFER DARI", "-"*14)
+                    print("BANK: BNI", f"NAMA: {name_list[indeks]}", f"NO. REK: {id}", sep="\n")
+                    print("-"*19, "KE", "-"*19)
+                    if jenis_bank == "1":
+                        print("BANK: BNI" , f"NAMA: {name_list[indeks_tujuan]}", f"NO. REK: {id_tujuan}" , f"JUMLAH: Rp {ubah_format(str(nominal))}", sep="\n")
+                    else:
+                        print(f"BANK: {nama_bank[id_tujuan[:3]]}"  , f"NAMA: {name_other_list[indeks_tujuan]}", f"NO. REK: {id_tujuan[3:]}" , f"JUMLAH: Rp {ubah_format(str(nominal))}", sep="\n")
+                    print("-"*42)
+                    input()
+                    break
+                elif cetak_resi == "n":
+                    break
+                print(tr("Input tidak sesuai."))
+        else:
+            print(tr("Maaf, saldo Anda tidak mencukupi."))
+            input()
+            main()
+    else:
+        print(tr("Transaksi tidak dapat diproses."))
+        input()
+        main()
 
 def pin_valid(pin):
     if pin.isnumeric():
@@ -161,20 +366,34 @@ def ganti_pin():
         
 def informasi_saldo():
     print("SALDO REKENING:" + f" Rp {ubah_format(str(balances_list[indeks]))}")
+    input()
 
 # Pemilihan Bahasa
-bahasa = input("Pilih bahasa yang akan digunakan/Choose a language (Indonesia/English): ")
-while bahasa != "Indonesia" and bahasa != "English":
-    print("Bahasa salah./Wrong language.")
-    bahasa = input("Pilih bahasa yang akan digunakan/Choose a language (Indonesia/English): ")
+print("1. Indonesia", "2. English", sep="\n")
+bahasa = input("Pilih bahasa / Choose a language: ")
+while bahasa != "1" and bahasa != "2":
+    os.system('cls')
+    print("Pilihan tidak tersedia./Option is not available.")
+    print("1. Indonesia", "2. English", sep="\n")
+    bahasa = input("Pilih bahasa / Choose a language: ")
+
+"""
+bahasa = ""
+while bahasa != "1" and bahasa != "2":
+    print("1. Indonesia", "2. English", sep="\n")
+    bahasa = input("Pilih bahasa / Choose a language: ")
+    if bahasa != "1" and bahasa != "2":
+        os.system('cls')
+        print("Pilihan tidak tersedia./Option is not available.")
+"""
 
 # Validasi ID
 os.system('cls')
-id = input(tr("Masukkan ID: "))
+id = input(tr("Masukkan nomor rekening: "))
 while not(id in id_list):
     os.system('cls')
     print(tr("ID Anda tidak dikenali."))
-    id = input(tr("Masukkan ID: "))
+    id = input(tr("Masukkan nomor rekening: "))
 indeks = id_list.index(id)
 
 # Validasi PIN
@@ -193,36 +412,4 @@ if percobaan == 3:
     exit()
 
 # Penampilan dan Pemilihan Menu
-while True:
-    os.system('cls')
-    halaman1()
-    pilih_menu = input(tr("Menu penarikan cepat (1-5): "))
-    if pilih_menu == "1":
-        penarikan_tunai(250000)
-    elif pilih_menu == "2":
-        penarikan_tunai(500000)
-    elif pilih_menu == "3":
-        penarikan_tunai(1000000)
-    elif pilih_menu == "4":
-        penarikan_tunai(1250000)
-    elif pilih_menu == "5":
-        while True:
-            os.system('cls')
-            halaman2()
-            pilih_menu = input(tr("Menu lain (1-5): "))
-            if pilih_menu == "1":
-                os.system('cls')
-                nominal = int(input(tr("Masukkan nominal uang (rupiah): ")))
-                penarikan_tunai(nominal)
-            elif pilih_menu == "2":
-                transfer()
-            elif pilih_menu == "3":
-                ganti_pin()
-            elif pilih_menu == "4":
-                informasi_saldo()
-            elif pilih_menu == "5":
-                break
-            elif pilih_menu == "6":
-                exit()
-    elif pilih_menu == "6":
-        exit()
+main()

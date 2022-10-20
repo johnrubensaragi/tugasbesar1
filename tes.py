@@ -1,3 +1,1 @@
-import pwinput
-r = "Password: "
-tes = pwinput.pwinput(prompt=r)
+print("342bubu2"[3:])
