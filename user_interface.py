@@ -60,58 +60,58 @@ layar.place(relx = 0.5, rely = 0.5, anchor="center")
 layar.grid_propagate(0)
 layar.configure(font=("Helvetica", 15))
 
-simbol1 = PhotoImage(file = "atmone.png")
+simbol1 = PhotoImage(file = ".\\simbol\\atmone.png")
 tombol1 = Button(blok_bawah_tengah, border=4, image=simbol1, command = input1)
 tombol1.place(width = 120, height =90, relx = 0.125, rely = 0.125, anchor="center")
 
-simbol2 = PhotoImage(file = "atmtwo.png")
+simbol2 = PhotoImage(file = ".\\simbol\\atmtwo.png")
 tombol2 = Button(blok_bawah_tengah, border=4, image = simbol2, command = input2)
 tombol2.place(width = 120, height =90, relx = 0.375, rely = 0.125, anchor="center")
 
-simbol3 = PhotoImage(file = "atmthree.png")
+simbol3 = PhotoImage(file = ".\\simbol\\atmthree.png")
 tombol3= Button(blok_bawah_tengah, border=4, image = simbol3, command = input3)
 tombol3.place(width = 120, height =90, relx = 0.625, rely = 0.125, anchor="center")
 
-simbolcancel = PhotoImage(file = "atmcancel.png")
+simbolcancel = PhotoImage(file = ".\\simbol\\atmcancel.png")
 tombol_cancel = Button(blok_bawah_tengah, border=4, bg = "red" , activebackground="red", image = simbolcancel)
 tombol_cancel.place(width = 120, height =90, relx = 0.875, rely = 0.125, anchor="center")
 
-simbol4 = PhotoImage(file = "atmfour.png")
+simbol4 = PhotoImage(file = ".\\simbol\\atmfour.png")
 tombol4 = Button(blok_bawah_tengah, border=4, image=simbol4, command = input4)
 tombol4.place(width = 120, height =90, relx = 0.125, rely = 0.375, anchor="center")
 
-simbol5 = PhotoImage(file = "atmfive.png")
+simbol5 = PhotoImage(file = ".\\simbol\\atmfive.png")
 tombol5 = Button(blok_bawah_tengah, border=4, image = simbol5, command = input5)
 tombol5.place(width = 120, height =90, relx = 0.375, rely = 0.375, anchor="center")
 
-simbol6 = PhotoImage(file = "atmsix.png")
+simbol6 = PhotoImage(file = ".\\simbol\\atmsix.png")
 tombol6= Button(blok_bawah_tengah, border=4, image = simbol6, command = input6)
 tombol6.place(width = 120, height =90, relx = 0.625, rely = 0.375, anchor="center")
 
-simbolclear = PhotoImage(file = "atmclear.png")
+simbolclear = PhotoImage(file = ".\\simbol\\atmclear.png")
 tombol_clear = Button(blok_bawah_tengah, border=4, bg = "yellow" , activebackground="yellow", image = simbolclear)
 tombol_clear.place(width = 120, height =90, relx = 0.875, rely = 0.375, anchor="center")
 
-simbol7 = PhotoImage(file = "atmseven.png")
+simbol7 = PhotoImage(file = ".\\simbol\\atmseven.png")
 tombol7 = Button(blok_bawah_tengah, border=4, image=simbol7, command = input7)
 tombol7.place(width = 120, height =90, relx = 0.125, rely = 0.625, anchor="center")
 
-simbol8 = PhotoImage(file = "atmeight.png")
+simbol8 = PhotoImage(file = ".\\simbol\\atmeight.png")
 tombol8 = Button(blok_bawah_tengah, border=4, image = simbol8, command = input8)
 tombol8.place(width = 120, height =90, relx = 0.375, rely = 0.625, anchor="center")
 
-simbol9 = PhotoImage(file = "atmnine.png")
+simbol9 = PhotoImage(file = ".\\simbol\\atmnine.png")
 tombol9= Button(blok_bawah_tengah, border=4, image = simbol9, command = input9)
 tombol9.place(width = 120, height =90, relx = 0.625, rely = 0.625, anchor="center")
 
-simbolenter = PhotoImage(file = "atmenter.png")
+simbolenter = PhotoImage(file = ".\\simbol\\atmenter.png")
 tombol_enter = Button(blok_bawah_tengah, border=4, bg = "green" , activebackground="green", image = simbolenter)
 tombol_enter.place(width = 120, height =90, relx = 0.875, rely = 0.625, anchor="center")
 
 tombolkosong1 = Button(blok_bawah_tengah, border=4)
 tombolkosong1.place(width = 120, height =90, relx = 0.125, rely =0.875, anchor="center")
 
-simbol0 = PhotoImage(file = "atmzero.png")
+simbol0 = PhotoImage(file = ".\\simbol\\atmzero.png")
 tombol0 = Button(blok_bawah_tengah, border=4, image = simbol0, command = input0)
 tombol0.place(width = 120, height =90, relx = 0.375, rely =0.875, anchor="center")
 

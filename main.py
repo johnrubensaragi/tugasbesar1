@@ -452,12 +452,14 @@ while not pin_valid(pin):
     print(tr("PIN harus terdiri dari 6 digit."))
     pin = pwinput.pwinput(prompt = tr("Masukkan PIN: "))
 pin_sha256 = sha256(pin.encode('utf-8')).hexdigest()
+
 percobaan = int(trial_list[indeks])+1
 trial_list[indeks] = str(percobaan)
 trial_file.seek(0)
 for i in trial_list:
     trial_file.writelines(i + "\n")
 trial_file.truncate()
+
 while percobaan < 3 and pin_sha256 != pin_list[indeks]:
     os.system('cls')
     print(tr("PIN yang Anda masukkan salah."))
@@ -468,7 +470,7 @@ while percobaan < 3 and pin_sha256 != pin_list[indeks]:
         print(tr("PIN harus terdiri dari 6 digit."))
         pin = pwinput.pwinput(prompt = tr("Masukkan PIN: "))
     pin_sha256 = sha256(pin.encode('utf-8')).hexdigest()
-    percobaan += 1
+    percobaan = int(trial_list[indeks])+1
     trial_list[indeks] = str(percobaan)
     trial_file.seek(0)
     for i in trial_list:
