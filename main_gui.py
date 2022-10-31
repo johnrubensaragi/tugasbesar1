@@ -392,6 +392,7 @@ def init_gantipin_lama(): # Memulai proses input PIN lama
     pin_lama = ""
 
 def ganti_pin(pin_):   # Mengganti PIN
+    global pin_list
     layar.delete("1.0", END)
     pin_sha256 = sha256(pin_.encode('utf-8')).hexdigest()
     pin_list[indeks] = pin_sha256
@@ -407,7 +408,7 @@ def ganti_pin(pin_):   # Mengganti PIN
     layar.insert(END, tr("PIN berhasil diganti.")+"\n"+tr("Tekan Enter untuk kembali ke menu utama.")+"\n"+tr("Tekan Cancel untuk keluar."))
 
 def input_(num): # Menentukan kegunaan tombol (0-9) di masing-masing menu (state)
-    global state, last_state, id, pin, pin_sha256, bahasa, wrongPIN, percobaan, nominal, nominal_str, pin_lama, pin_baru1, pin_baru2, id_tujuan, jenis_bank, penarikan_cepat, ubah
+    global state, last_state, id, id_list, pin, pin_sha256, bahasa, wrongPIN, percobaan, nominal, nominal_str, pin_lama, pin_baru1, pin_baru2, id_tujuan, jenis_bank, penarikan_cepat, ubah
 
     if state == "ID":
         id += str(num)
@@ -659,7 +660,7 @@ def restart(): # Menyelesaikan sesi yang sedang berlangsung lalu membuat sesi ba
     init_id()
 
 def input_clear(): # Menentukan kegunaan tombol Clear di masing-masing menu (state)
-    global state, pin, id, pin_lama, pin_baru1, pin_baru2, id_tujuan
+    global state, pin, id, pin_lama, pin_baru1, pin_baru2, id_tujuan, nominal_str
     if state == "PIN":
         layar.delete(f"end-{len(pin)+1}c", END)
         pin = ""
@@ -746,58 +747,58 @@ layar.place(relx = 0.5, rely = 0.5, anchor="center")
 layar.grid_propagate(0)
 
 # Tombol angka
-simbol1 = PhotoImage(file = ".\\simbol\\atmone.png")
+simbol1 = PhotoImage(file = ".\\icon\\atmone.png")
 tombol1 = Button(blok_bawah_tengah, border=4, image=simbol1, command = lambda: input_(1))
 tombol1.place(width = 120, height =90, relx = 0.125, rely = 0.125, anchor="center")
 
-simbol2 = PhotoImage(file = ".\\simbol\\atmtwo.png")
+simbol2 = PhotoImage(file = ".\\icon\\atmtwo.png")
 tombol2 = Button(blok_bawah_tengah, border=4, image = simbol2, command = lambda: input_(2))
 tombol2.place(width = 120, height =90, relx = 0.375, rely = 0.125, anchor="center")
 
-simbol3 = PhotoImage(file = ".\\simbol\\atmthree.png")
+simbol3 = PhotoImage(file = ".\\icon\\atmthree.png")
 tombol3= Button(blok_bawah_tengah, border=4, image = simbol3, command = lambda: input_(3))
 tombol3.place(width = 120, height =90, relx = 0.625, rely = 0.125, anchor="center")
 
-simbolcancel = PhotoImage(file = ".\\simbol\\atmcancel.png")
+simbolcancel = PhotoImage(file = ".\\icon\\atmcancel.png")
 tombol_cancel = Button(blok_bawah_tengah, border=4, bg = "red" , activebackground="red", image = simbolcancel, command=restart)
 tombol_cancel.place(width = 120, height =90, relx = 0.875, rely = 0.125, anchor="center")
 
-simbol4 = PhotoImage(file = ".\\simbol\\atmfour.png")
+simbol4 = PhotoImage(file = ".\\icon\\atmfour.png")
 tombol4 = Button(blok_bawah_tengah, border=4, image=simbol4, command = lambda: input_(4))
 tombol4.place(width = 120, height =90, relx = 0.125, rely = 0.375, anchor="center")
 
-simbol5 = PhotoImage(file = ".\\simbol\\atmfive.png")
+simbol5 = PhotoImage(file = ".\\icon\\atmfive.png")
 tombol5 = Button(blok_bawah_tengah, border=4, image = simbol5, command = lambda: input_(5))
 tombol5.place(width = 120, height =90, relx = 0.375, rely = 0.375, anchor="center")
 
-simbol6 = PhotoImage(file = ".\\simbol\\atmsix.png")
+simbol6 = PhotoImage(file = ".\\icon\\atmsix.png")
 tombol6= Button(blok_bawah_tengah, border=4, image = simbol6, command = lambda: input_(6))
 tombol6.place(width = 120, height =90, relx = 0.625, rely = 0.375, anchor="center")
 
-simbolclear = PhotoImage(file = ".\\simbol\\atmclear.png")
+simbolclear = PhotoImage(file = ".\\icon\\atmclear.png")
 tombol_clear = Button(blok_bawah_tengah, border=4, bg = "yellow" , activebackground="yellow", image = simbolclear, command=input_clear)
 tombol_clear.place(width = 120, height =90, relx = 0.875, rely = 0.375, anchor="center")
 
-simbol7 = PhotoImage(file = ".\\simbol\\atmseven.png")
+simbol7 = PhotoImage(file = ".\\icon\\atmseven.png")
 tombol7 = Button(blok_bawah_tengah, border=4, image=simbol7, command = lambda: input_(7))
 tombol7.place(width = 120, height =90, relx = 0.125, rely = 0.625, anchor="center")
 
-simbol8 = PhotoImage(file = ".\\simbol\\atmeight.png")
+simbol8 = PhotoImage(file = ".\\icon\\atmeight.png")
 tombol8 = Button(blok_bawah_tengah, border=4, image = simbol8, command = lambda: input_(8))
 tombol8.place(width = 120, height =90, relx = 0.375, rely = 0.625, anchor="center")
 
-simbol9 = PhotoImage(file = ".\\simbol\\atmnine.png")
+simbol9 = PhotoImage(file = ".\\icon\\atmnine.png")
 tombol9= Button(blok_bawah_tengah, border=4, image = simbol9, command = lambda: input_(9))
 tombol9.place(width = 120, height =90, relx = 0.625, rely = 0.625, anchor="center")
 
-simbolenter = PhotoImage(file = ".\\simbol\\atmenter.png")
+simbolenter = PhotoImage(file = ".\\icon\\atmenter.png")
 tombol_enter = Button(blok_bawah_tengah, border=4, bg = "green" , activebackground="green", image = simbolenter, command=input_enter)
 tombol_enter.place(width = 120, height =90, relx = 0.875, rely = 0.625, anchor="center")
 
 tombol_kosong1 = Button(blok_bawah_tengah, border=4)
 tombol_kosong1.place(width = 120, height =90, relx = 0.125, rely =0.875, anchor="center")
 
-simbol0 = PhotoImage(file = ".\\simbol\\atmzero.png")
+simbol0 = PhotoImage(file = ".\\icon\\atmzero.png")
 tombol0 = Button(blok_bawah_tengah, border=4, image = simbol0, command = lambda: input_(0))
 tombol0.place(width = 120, height =90, relx = 0.375, rely =0.875, anchor="center")
 
