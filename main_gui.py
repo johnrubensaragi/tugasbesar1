@@ -1,46 +1,52 @@
 """
 TUGAS BESAR 1 PENGENALAN KOMPUTASI 2022
 
-Kelas:  
-Nama Dosen Pengampu: Muhammad Ogin Hasanudin
+Kelas: 21
+Nama Dosen Pengampu: Muhammad Ogin Hasanudin, S.T, M.T.
 Kelompok: 1
 Anggota:    1. John Ruben Saragi (16522097)
-            2. 
-            3. 
-            4. 
+            2. Muhammad Adib Al Ghifari (16522127)
+            3. Muhammad Dhanni Firdaus (16522157)
+            4. Jihan Aurelia (19622057)
 Tanggal: 31 Oktober 2022
-Deskripsi:
+Deskripsi:  Program ini menyimulasikan ATM BNI dalam Tkinter.
 Kamus:
-    #last checked: baris 213
     Variabel Global
-        waktu:
-        window: 
-        main: 
-        id_file, pin_file, pin_sebelum_file, balances_file, name_file, id_other_file, name_other_file, bank_list_file, trial_file: 
+        waktu: datetime
+        window: Tk
+        main, blok_atas, blok_bawah, blok_atas_tengah, blok_bawah_tengah: Frame
+        layar: Text
+        tombol0, tombol1, tombol2, tombol3, tombol4, tombol5, tombol6, tombol7, tombol8, tombol9, tombol_cancel, tombol_clear, tombol_enter, tombol_kosong1: Button
+        simbol0, simbol1, simbol2, simbol3, simbol4, simbol5, simbol6, simbol7, simbol8, simbol9, simbolcancel, simbolclear, simbolenter: PhotoImage 
+        id_file, pin_file, pin_sebelum_file, balances_file, name_file, id_other_file, name_other_file, bank_list_file, trial_file: file
         id_list, pin_list, pin_sebelum_list, balances_list, name_list, id_other_list, name_other_list, trial_list: array of string
-        nama_bank: dictionary of string:string
-        kamus: dictionary of string:string
-        state, last_state, pin, pin_sha256, : string
-        wrongPIN: boolean
-        nominal: int
+        nama_bank, kamus: dictionary of string:string
+        state, last_state, bahasa, id, id_other, pin, pin_sha256, pin_lama, pin_baru1, pin_baru2, nominal_str, jenis_bank, id_tujuan, nama: string
+        wrongPIN, penarikan_cepat, ubah: boolean
+        indeks, indeks_tujuan, nominal, percobaan: int
     Variabel Lokal
         fungsi tr(): string
             a: string
         fungsi ubah_format(): string
             awal, akhir: string
-            j: int
+            i, j: int
             akhir_list: array of char
-
+        prosedur tksleep():
+            secs: int
+            last_state: string
 """
 
+# ALGORITMA
 
-from tkinter import *
-from hashlib import sha256
-import datetime
-import time
-waktu = datetime.datetime.now()
+from tkinter import *           # Tkinter untuk User Interface
+from hashlib import sha256      # Untuk mengenkripsi PIN
+import datetime                 # Untuk menampilkan tanggal dan waktu di resi
+import time                     # Untuk menunda jalannya kode
+
+waktu = datetime.datetime.now() 
 
 # User Interface
+# Jendela Utama
 window = Tk()
 window.title(" " * 128 + "ATM BNI")
 window.geometry("900x800+300+20")
@@ -52,7 +58,7 @@ main.grid(row = 0, column = 0)
 # User Data (membuka file dan menyimpan data dalam array)
 id_file = open("id.txt", "r+")
 pin_file = open("pin.txt", "r+")
-pin_sebelum_file = open("pin_sebelum.txt", "r+")
+# pin_sebelum_file = open("pin_sebelum.txt", "r+")
 balances_file = open("bin.txt", "r+")
 name_file = open("name.txt", "r+")
 id_other_file = open("id_other.txt", "r+")
@@ -68,9 +74,9 @@ pin_list = []
 for i in pin_file.readlines():
     pin_list.append(i.strip())
 
-pin_sebelum_list = []
-for i in pin_sebelum_file.readlines():
-    pin_sebelum_list.append(i.strip())
+#pin_sebelum_list = []
+#for i in pin_sebelum_file.readlines():
+#    pin_sebelum_list.append(i.strip())
 
 balances_list = []
 for i in balances_file.readlines():
@@ -162,7 +168,7 @@ kamus = {                                     #"  "                             
     "Masukkan PIN yang belum pernah digunakan:" : "Enter PIN that is not used before:"          ,
     "Tekan Enter untuk kembali..."              : "Press Enter to return..."}
 
-def tr(a):
+def tr(a):  # Menerjemahkan bahasa Indonesia menjadi bahasa Inggris
     if bahasa == "1":
         return a
     else:
@@ -171,7 +177,25 @@ def tr(a):
         else:
             return "TRANSLATION ERROR"
 
-def ubah_format(awal):
+def init_id(): # Menerima nomor rekening nasabah, ekuivalen dengan memasukkan kartu ATM
+    global state, id
+    state = "ID"
+    id = ""
+    layar.insert(END,"Masukkan nomor rekening Anda\nEnter your account number\n\n")
+
+def init_pin(): # Memulai proses memasukkan PIN
+    global state, pin
+    state = "PIN"
+    layar.insert(END, tr("Masukkan PIN:")+"\n")
+    pin = ""
+
+def init_main1():   # Memulai menu penarikan cepat
+    global state
+    layar.delete("1.0", END)
+    state = "main1"
+    layar.insert(END, tr("Menu penarikan cepat")+"\n1. Rp250.000,00\n2. Rp500.000,00\n3. Rp1.000.000,00\n4. Rp1.250.000,00\n"+tr("5. Menu lain"))
+
+def ubah_format(awal):  # Mengubah integer (50000) menjadi string (Rp50.000,00)
     if len(awal) == 1:
         return "0,0"+awal
     elif len(awal) == 2:
@@ -193,23 +217,7 @@ def ubah_format(awal):
         akhir += i
     return akhir
 
-def init_pin():
-    global state, pin
-    state = "PIN"
-    layar.insert(END, tr("Masukkan PIN:")+"\n")
-    pin = ""
-
-def PIN_trial():
-    global wrongPIN, pin, state
-    wrongPIN = True
-    layar.delete('1.0', END)
-    layar.insert(END, tr("PIN yang Anda masukkan salah.")+"\n")
-    layar.insert(END, tr("Jika Anda salah memasukkan PIN")+"\n")
-    layar.insert(END, tr("sebanyak 3 (tiga) kali,")+"\n")
-    layar.insert(END, tr("akun Anda akan terblokir")+"\n")
-    init_pin()
-
-def penarikan_tunai():
+def penarikan_tunai():  # Melakukan penarikan tunai
     global state, last_state
     if (nominal % 5000000) == 0 and nominal > 0 and nominal <= 125000000:
         if nominal <= balances_list[indeks]:
@@ -247,14 +255,55 @@ def penarikan_tunai():
         layar.insert(END, "\n"+ tr("Transaksi tidak dapat diproses.") + "\n" + tr("Tekan Enter untuk kembali ke menu utama.") + "\n" + tr("Tekan Cancel untuk keluar."))
         state = "penarikan_tunai_gagal"
 
-def init_transfer_nominal():
+def PIN_trial():    # Memberi kesempatan bagi nasabah untuk mengoreksi PIN
+    global wrongPIN, pin, state
+    wrongPIN = True
+    layar.delete('1.0', END)
+    layar.insert(END, tr("PIN yang Anda masukkan salah.")+"\n")
+    layar.insert(END, tr("Jika Anda salah memasukkan PIN")+"\n")
+    layar.insert(END, tr("sebanyak 3 (tiga) kali,")+"\n")
+    layar.insert(END, tr("akun Anda akan terblokir")+"\n")
+    init_pin()
+
+def update_trial_list(): # Menuliskan jumlah percobaan dalam trial.txt
+    global percobaan, trial_list, trial_file
+    trial_list[indeks] = str(percobaan)
+    trial_file.seek(0)
+    for i in trial_list:
+        trial_file.writelines(i + "\n")
+    trial_file.truncate()
+
+def init_main2():   # Memulai menu lain
+    global state, penarikan_cepat
+    state = "main2"
+    penarikan_cepat = False
+    layar.delete("1.0", END)
+    layar.insert("1.0", tr("Menu lain")+"\n"+tr("1. Penarikan tunai")+"\n"+tr("2. Transfer")+"\n"+tr("3. Ganti PIN")+"\n"+tr("4. Informasi saldo")+"\n"+tr("5. Menu penarikan cepat"))
+
+def init_transfer_id(): # Memulai proses input dari rekening tujuan
+    global state, id_tujuan
+    layar.delete("1.0", END)
+    state = "transfer(id)"
+    layar.insert(END, tr("Masukkan nomor rekening tujuan") + "\n")
+    id_tujuan = ""
+
+def init_transfer_id_other(): # Memulai proses input rekening tujuan untuk bank lain
+    global state, id_tujuan
+    state = "transfer(id_other)"
+    layar.delete("1.0", END)
+    layar.insert(END, tr("Masukkan kode bank + nomor rekening tujuan") + "\n")
+    layar.insert(END, tr("Tekan Enter tanpa masukan rekening") + "\n")
+    layar.insert(END, tr("untuk melihat daftar bank.") + "\n")
+    id_tujuan = ""
+
+def init_transfer_nominal():    # Memulai proses input dari nominal transfer
     global state, nominal_str
     state = "transfer(nominal)"
     layar.delete("1.0", END)
     layar.insert(END, tr("Masukkan nominal transfer:")+"\n")
     nominal_str = ""
 
-def tujuan_transfer():
+def tujuan_transfer():  # Mengecek sah atau tidaknya tujuan transfer
     global state, indeks_tujuan, nominal_str, nama, jenis_bank, id_tujuan, ubah
     layar.delete("1.0", END)
     if jenis_bank == "1":
@@ -284,18 +333,18 @@ def tujuan_transfer():
             layar.insert(END, tr("Nomor rekening tidak ada.") + "\n")
             layar.insert(END, tr("Tekan Enter untuk kembali ke menu utama.") + "\n" + tr("Tekan Cancel untuk keluar."))
 
-def konfirmasi_transfer():
+def konfirmasi_transfer():  # Mengonfirmasi transfer
     global id_tujuan, nama, nominal, jenis_bank
     layar.delete("1.0", END)
     if jenis_bank == "1":
-        layar.insert(END, f"{tr("Nomor rekening: ")} {id_tujuan}\n")
+        layar.insert(END, f"{tr('Nomor rekening: ')} {id_tujuan}\n")
     else:
-        layar.insert(END, f"{tr("Nomor rekening: ")} {id_tujuan[3:]}\n")   
-    layar.insert(END, f"{tr("Nama penerima: ")} {nama}\n")
+        layar.insert(END, f"{tr('Nomor rekening: ')} {id_tujuan[3:]}\n")   
+    layar.insert(END, f"{tr('Nama penerima: ')} {nama}\n")
     layar.insert(END, f"Nominal: Rp {ubah_format(str(nominal))}\n")
     layar.insert(END, tr("Tekan 1 jika sudah sesuai.")+"\n"+tr("Tekan 2 jika tidak sesuai."))
 
-def validasi_transfer():
+def validasi_transfer(): # Melakukan transfer
     global state, last_state, jenis_bank, nominal, indeks_tujuan, indeks, id
     layar.delete("1.0", END)
     if nominal >= 5000000:
@@ -328,74 +377,36 @@ def validasi_transfer():
         layar.insert(END, tr("Transaksi tidak dapat diproses."))
         layar.insert(END, tr("Tekan Enter untuk kembali ke menu utama.") + "\n" + tr("Tekan Cancel untuk keluar."))
 
-# User Interface part 2
-def update_trial_list():
-    global percobaan, trial_list, trial_file
-    trial_list[indeks] = str(percobaan)
-    trial_file.seek(0)
-    for i in trial_list:
-        trial_file.writelines(i + "\n")
-    trial_file.truncate()
-
-def ganti_pin(pin_baru1):
-    layar.delete("1.0", END)
-    pin_sha256 = sha256(pin_baru1.encode('utf-8')).hexdigest()
-    pin_list[indeks] = pin_sha256
-    pin_file.seek(0)
-    for i in pin_list:
-        pin_file.writelines(i + "\n")
-    pin_file.truncate()
-    pin_sebelum_list[indeks] = pin_baru1
-    pin_sebelum_file.seek(0)
-    for i in pin_sebelum_list:
-        pin_sebelum_file.writelines(i + "\n")
-    pin_sebelum_file.truncate()
-    layar.insert(END, tr("PIN berhasil diganti.")+"\n"+tr("Tekan Enter untuk kembali ke menu utama.")+"\n"+tr("Tekan Cancel untuk keluar."))
-
-def init_main1():
-    global state
-    layar.delete("1.0", END)
-    state = "main1"
-    layar.insert(END, tr("Menu penarikan cepat")+"\n1. Rp250.000,00\n2. Rp500.000,00\n3. Rp1.000.000,00\n4. Rp1.250.000,00\n"+tr("5. Menu lain"))
-
-def init_main2():
-    global state, penarikan_cepat
-    state = "main2"
-    penarikan_cepat = False
-    layar.delete("1.0", END)
-    layar.insert("1.0", tr("Menu lain")+"\n"+tr("1. Penarikan tunai")+"\n"+tr("2. Transfer")+"\n"+tr("3. Ganti PIN")+"\n"+tr("4. Informasi saldo")+"\n"+tr("5. Menu penarikan cepat"))
-
-def init_gantipin():
+def init_gantipin():    # Memulai proses mengganti PIN
     global state
     state = "ganti pin?"
     layar.insert(END, tr("Apakah Anda ingin mengganti PIN?: ")+"\n")
     layar.insert(END, tr("1. Ya")+"\n")
     layar.insert(END, tr("2. Tidak")+"\n")
 
-def init_transfer_id():
-    global state, id_tujuan
-    layar.delete("1.0", END)
-    state = "transfer(id)"
-    layar.insert(END, tr("Masukkan nomor rekening tujuan") + "\n")
-    id_tujuan = ""
-
-def init_transfer_id_other():
-    global state, id_tujuan
-    state = "transfer(id_other)"
-    layar.delete("1.0", END)
-    layar.insert(END, tr("Masukkan kode bank + nomor rekening tujuan") + "\n")
-    layar.insert(END, tr("Tekan Enter tanpa masukan rekening") + "\n")
-    layar.insert(END, tr("untuk melihat daftar bank.") + "\n")
-    id_tujuan = ""
-
-def init_gantipin_lama():
+def init_gantipin_lama(): # Memulai proses input PIN lama
     global state, pin_lama
     state = "gantipin(lama)"
     layar.delete("1.0", END)
     layar.insert(END, tr("Masukkan PIN lama Anda: ")+"\n")
     pin_lama = ""
 
-def input_(num):
+def ganti_pin(pin_):   # Mengganti PIN
+    layar.delete("1.0", END)
+    pin_sha256 = sha256(pin_.encode('utf-8')).hexdigest()
+    pin_list[indeks] = pin_sha256
+    pin_file.seek(0)
+    for i in pin_list:
+        pin_file.writelines(i + "\n")
+    pin_file.truncate()
+    #pin_sebelum_list[indeks] = pin_baru1
+    #pin_sebelum_file.seek(0)
+    #for i in pin_sebelum_list:
+    #    pin_sebelum_file.writelines(i + "\n")
+    #pin_sebelum_file.truncate()
+    layar.insert(END, tr("PIN berhasil diganti.")+"\n"+tr("Tekan Enter untuk kembali ke menu utama.")+"\n"+tr("Tekan Cancel untuk keluar."))
+
+def input_(num): # Menentukan kegunaan tombol (0-9) di masing-masing menu (state)
     global state, last_state, id, pin, pin_sha256, bahasa, wrongPIN, percobaan, nominal, nominal_str, pin_lama, pin_baru1, pin_baru2, id_tujuan, jenis_bank, penarikan_cepat, ubah
 
     if state == "ID":
@@ -415,7 +426,6 @@ def input_(num):
             tksleep(1)
             pin_sha256 = sha256(pin.encode('utf-8')).hexdigest()
             percobaan = int(trial_list[indeks])+1
-            print(percobaan)
             update_trial_list()
             if pin_sha256 == pin_list[indeks]:
                 percobaan = 0
@@ -423,29 +433,32 @@ def input_(num):
                 if wrongPIN:
                     if last_state == "penarikan_tunai":
                         penarikan_tunai()
-                    if last_state == "transfer(validasi)":
+                    elif last_state == "transfer(validasi)":
                         validasi_transfer()
-                    if last_state == "main2":
+                    elif last_state == "main2":
                         init_main2()
-                    if last_state == "gantipin(baru2)":
-                        ganti_pin(pin_baru1)
-            if not wrongPIN:
-                init_main1()
-            if wrongPIN and pin_sha256 != pin_list[indeks]:
-                if percobaan < 3:
-                    PIN_trial()
+                    elif last_state == "gantipin(baru2)":
+                        ganti_pin(pin_baru2)
                 else:
-                    id_list[indeks] = "*" + id_list[indeks]
-                    id_file.seek(0)
-                    for i in id_list:
-                        id_file.writelines(i + "\n")
-                    id_file.truncate()
-                    layar.delete("1.0", END)
-                    layar.insert(END, tr("Anda sudah memasukkan PIN yang salah")+"\n")
-                    layar.insert(END, tr("sebanyak 3 (tiga) kali.")+"\n")
-                    layar.insert(END, tr("Akun Anda terblokir.")+"\n")
-                    tksleep(5)
-                    restart()
+                    init_main1()
+            else:
+                if wrongPIN:
+                    if percobaan < 3:
+                        PIN_trial()
+                    else:
+                        id_list[indeks] = "*" + id_list[indeks]
+                        id_file.seek(0)
+                        for i in id_list:
+                            id_file.writelines(i + "\n")
+                        id_file.truncate()
+                        layar.delete("1.0", END)
+                        layar.insert(END, tr("Anda sudah memasukkan PIN yang salah")+"\n")
+                        layar.insert(END, tr("sebanyak 3 (tiga) kali.")+"\n")
+                        layar.insert(END, tr("Akun Anda terblokir.")+"\n")
+                        tksleep(5)
+                        restart()
+                else:
+                    init_main1()
 
     elif state == "main1":
         if num == 1:
@@ -497,7 +510,6 @@ def input_(num):
         if num == 1 or num == 2:
             layar.delete("1.0", END)
             if num == 1:
-                print("Cetak resinya!")
                 layar.configure(bg = "white", fg = "black")
                 layar.insert(END, "-"*16+" Bank BNI "+"-"*16+"\n")
                 layar.insert(END, "TANGGAL " + " "*28 + " WAKTU\n")
@@ -542,7 +554,6 @@ def input_(num):
     elif state == "penarikan_tunai":
         nominal_str += str(num)
         layar.insert(END, num)
-        print(nominal_str)
     
     elif state == "transfer(awal)":
         ubah = False
@@ -567,8 +578,6 @@ def input_(num):
             validasi_transfer()
         else:
             state = "transfer(ubah)"
-            print(tr("1. Ubah nomor rekening"))
-            print(tr("2. Ubah nominal"))
             layar.delete("1.0", END)
             layar.insert(END, tr("1. Ubah nomor rekening")+"\n"+tr("2. Ubah nominal"))
     
@@ -623,36 +632,25 @@ def input_(num):
         if len(pin_baru2) == 6:
             tksleep(1)
             if pin_baru1 == pin_baru2:
-                print(pin_lama)
                 pin_sha256 = sha256(pin_lama.encode('utf-8')).hexdigest()
-                print(pin_sha256)
                 if pin_sha256 == pin_list[indeks]:
                     ganti_pin(pin_baru1)
                 else:
                     last_state = "gantipin(baru2)"
                     PIN_trial()
             else:
-                layar.insert(END, tr("Kedua PIN baru Anda tidak sesuai."))
+                layar.insert(END, "\n"+tr("Kedua PIN baru Anda tidak sesuai."))
 
-def tksleep(secs):
+def tksleep(secs): # Untuk menunda jalannya kode
     global state
     last_state = state
-    print("last state =", last_state)
     state = ""
-    print("current state =", state)
     window.update()
     time.sleep(secs)
     state = last_state
 
-def init_id():
+def restart(): # Menyelesaikan sesi yang sedang berlangsung lalu membuat sesi baru
     global state, id
-    state = "ID"
-    id = ""
-    layar.insert(END,"Masukkan nomor rekening Anda\nEnter your account number\n\n")
-
-def restart():
-    global state, id
-    print("cancel")
     layar.delete(1.0, END)
     layar.insert(END, "Transaksi selesai.\n")
     layar.insert(END, "Transaction done.\n")
@@ -660,7 +658,7 @@ def restart():
     layar.delete("1.0", END)
     init_id()
 
-def input_clear():
+def input_clear(): # Menentukan kegunaan tombol Clear di masing-masing menu (state)
     global state, pin, id, pin_lama, pin_baru1, pin_baru2, id_tujuan
     if state == "PIN":
         layar.delete(f"end-{len(pin)+1}c", END)
@@ -680,7 +678,7 @@ def input_clear():
     if state == "penarikan_tunai":
         layar.delete(f"end-{len(nominal_str)+1}c", END)
         nominal_str = ""
-    if state == "transfer(id)" or state == "transfer(id_other)": # ini udah bener or. Jangan diganti.
+    if state == "transfer(id)" or state == "transfer(id_other)":
         layar.delete(f"end-{len(id_tujuan)+1}c", END)
         id_tujuan = ""
     if state == "transfer(nominal)":
@@ -688,7 +686,7 @@ def input_clear():
         nominal_str = ""
     layar.insert(END, "\n")
 
-def input_enter():
+def input_enter(): # Menentukan kegunaan Enter di masing-masing menu (state)
     global state, id, indeks, nominal, id_tujuan
     if state == "ID":
         if id in id_list:
@@ -722,14 +720,12 @@ def input_enter():
         else:
             tujuan_transfer()
     elif state == "transfer(nominal)":
-        print(nominal_str)
         nominal = int(nominal_str) * 100
         state = "transfer(konfirmasi)"
         konfirmasi_transfer()
     elif state == "daftar_bank":
         init_transfer_id_other()       
 
-# INTERFACE
 blok_atas = Frame(main, width = 900, height = 800/2, border = 1, relief = RIDGE)
 blok_atas.grid(row = 0, column = 0)
 
@@ -749,6 +745,7 @@ layar = Text(blok_atas_tengah, width = 42, height = 16, border = 5, relief = RID
 layar.place(relx = 0.5, rely = 0.5, anchor="center")
 layar.grid_propagate(0)
 
+# Tombol angka
 simbol1 = PhotoImage(file = ".\\simbol\\atmone.png")
 tombol1 = Button(blok_bawah_tengah, border=4, image=simbol1, command = lambda: input_(1))
 tombol1.place(width = 120, height =90, relx = 0.125, rely = 0.125, anchor="center")
@@ -797,15 +794,15 @@ simbolenter = PhotoImage(file = ".\\simbol\\atmenter.png")
 tombol_enter = Button(blok_bawah_tengah, border=4, bg = "green" , activebackground="green", image = simbolenter, command=input_enter)
 tombol_enter.place(width = 120, height =90, relx = 0.875, rely = 0.625, anchor="center")
 
-tombolkosong1 = Button(blok_bawah_tengah, border=4)
-tombolkosong1.place(width = 120, height =90, relx = 0.125, rely =0.875, anchor="center")
+tombol_kosong1 = Button(blok_bawah_tengah, border=4)
+tombol_kosong1.place(width = 120, height =90, relx = 0.125, rely =0.875, anchor="center")
 
 simbol0 = PhotoImage(file = ".\\simbol\\atmzero.png")
 tombol0 = Button(blok_bawah_tengah, border=4, image = simbol0, command = lambda: input_(0))
 tombol0.place(width = 120, height =90, relx = 0.375, rely =0.875, anchor="center")
 
-tombolkosong2= Button(blok_bawah_tengah, border=4)
-tombolkosong2.place(width = 120, height =90, relx = 0.625, rely =0.875, anchor="center")
+tombol_kosong2= Button(blok_bawah_tengah, border=4)
+tombol_kosong2.place(width = 120, height =90, relx = 0.625, rely =0.875, anchor="center")
 
 tombol_kosong3 = Button(blok_bawah_tengah, border=4)
 tombol_kosong3.place(width = 120, height =90, relx = 0.875, rely =0.875, anchor="center")
